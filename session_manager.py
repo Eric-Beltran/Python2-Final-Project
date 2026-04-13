@@ -1,0 +1,1 @@
+#Manages the active user's state. It tracks login attempts, enforcing a limit of 3–5 before exiting back to the welcome page.
