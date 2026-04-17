@@ -1,0 +1,32 @@
+{
+    "users": [
+        {
+            "email": "admin@gmail.com",
+            "password": "hashed_password_here",
+            "role": "admin"
+        },
+        {
+            "email": "test@gmail.com",
+            "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
+            "role": "user"
+        }
+    ],
+    "students": [
+        {
+            "id": "700700700",
+            "first_name": "Ben",
+            "last_name": "Toe",
+            "age": 20,
+            "gender": "M",
+            "phone": "123-456-7891",
+            "major": "Business",
+            "grades": [
+                [
+                    90,
+                    85,
+                    88
+                ]
+            ]
+        }
+    ]
+}
