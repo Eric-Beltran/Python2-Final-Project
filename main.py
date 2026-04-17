@@ -31,6 +31,12 @@ def register():
         print("User already exists.")
         return
 
+    print("  \u2666 1. Password must start with one of the following\
+         special characters !@#$%^&*")
+    print("  \u2666 2. Password must contain at least one digit, one\
+         lowercase letter, and one uppercase letter")
+    print("  \u2666 3. Password is between 6 and 12 letters long")
+    print()
     password = input("Enter password: ")
     hashed = hash_password(password)
 
