@@ -1,5 +1,3 @@
-"""Read and write the project's JSON-backed storage."""
-
 import json
 from pathlib import Path
 
@@ -8,7 +6,7 @@ EMPTY_DATABASE = {"users": [], "students": []}
 
 
 def load_data():
-    """Load the JSON database, creating an empty one if needed."""
+    # Load the JSON database, creating an empty one if needed
     try:
         if not DATABASE_FILE.exists():
             with DATABASE_FILE.open("w", encoding="utf-8") as file:
@@ -29,7 +27,7 @@ def load_data():
 
 
 def save_data(data):
-    """Persist the in-memory database back to the JSON file."""
+    # Persist the in-memory database back to the JSON file
     try:
         with DATABASE_FILE.open("w", encoding="utf-8") as file:
             json.dump(data, file, indent=4)
@@ -39,14 +37,14 @@ def save_data(data):
 
 
 def add_user(user):
-    """Append a user record to the database."""
+    # Append a user to the database
     data = load_data()
     data["users"].append(user)
     save_data(data)
 
 
 def find_user(email):
-    """Return the user record for the given email, if one exists."""
+    # Return the user for the given email, if one exists
     data = load_data()
 
     for user in data["users"]:
@@ -57,20 +55,20 @@ def find_user(email):
 
 
 def add_student(student):
-    """Append a student record to the database."""
+    # Append a student to the database
     data = load_data()
     data["students"].append(student)
     save_data(data)
 
 
 def get_all_students():
-    """Return all student records currently stored."""
+    # Return all student data currently stored
     data = load_data()
     return data["students"]
 
 
 def delete_student(student_id):
-    """Remove a student record by its ID."""
+    # Remove a student record by its ID
     data = load_data()
     data["students"] = [
         student for student in data["students"] if student["id"] != student_id

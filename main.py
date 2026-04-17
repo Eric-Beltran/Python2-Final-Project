@@ -9,12 +9,12 @@ Can currently:
 
 import hashlib
 
-from ControllerLayer.session_manager import (
+from session_manager import (
     get_current_user,
     login_session,
     logout_session,
 )
-from StorageLayer.data_handler import add_user, find_user
+from data_handler import add_user, find_user
 
 def hash_password(password):
     # Return SHA-256 hash so plain-text passwords are never stored
