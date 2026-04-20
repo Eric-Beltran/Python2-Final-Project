@@ -1,14 +1,22 @@
 {
     "users": [
         {
-            "email": "admin@gmail.com",
-            "password": "hashed_password_here",
-            "role": "admin"
-        },
-        {
             "email": "test@gmail.com",
             "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
-            "role": "user"
+            "role": "user",
+            "student_id": "700700700"
+        },
+        {
+            "email": "admin@gmail.com",
+            "password": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+            "role": "admin",
+            "student_id": null
+        },
+        {
+            "email": "jsmith@gmail.com",
+            "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
+            "role": "user",
+            "student_id": null
         }
     ],
     "students": [
