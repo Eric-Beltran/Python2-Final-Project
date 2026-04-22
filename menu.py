@@ -1,14 +1,19 @@
 """
+Menu flow for the Secure Student Management System.
 """
 
-from data_handler import add_user, find_user_by, get_all_students, add_student, link_user_to_student, update_student, find_student_by, delete_student
-from session_manager import login_session, logout_session, get_current_user
-from validator import valid_name, valid_email, valid_phone, valid_password
-import hashlib
-
-
-def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
+from data_handler import (
+    add_student,
+    delete_student,
+    find_student_by,
+    find_user_by,
+    get_all_students,
+    link_user_to_student,
+    update_student,
+)
+from session_manager import get_current_user, login_session, logout_session
+from user import login_user, register_user
+from validator import valid_email, valid_name, valid_password, valid_phone
 
 
 def prompt_valid_input(prompt_text, validator, error_message):
@@ -26,7 +31,7 @@ def prompt_valid_age(prompt_text):
             return int(value)
         print("Age must be a number.")
 
-# Main menu
+
 def main_menu():
     while True:
         print("\n=== Secure Student Management System ===")
@@ -38,79 +43,51 @@ def main_menu():
 
         if choice == "1":
             register()
-
         elif choice == "2":
             login()
-
         elif choice == "3":
             print("Exiting.")
             break
-
         else:
             print("Invalid choice.")
 
-# Registration and Login function
+
 def register():
-    # Create a new user record if the email is not already registered.
     print("\n--- Register ---")
-    email = prompt_valid_input(
-        "Enter email: ",
-        valid_email,
-        "Invalid email format."
-    )
+    email = prompt_valid_input("Enter email: ", valid_email, "Invalid email format.")
 
     if find_user_by("email", email):
         print("User already exists.")
         return
 
-    print("  \u2666 1. Password must start with one of the following special characters: !@#$%^&*")
-    print("  \u2666 2. Password must contain at least one digit, one lowercase letter, and one uppercase letter.")
-    print("  \u2666 3. Password is between 6 and 12 letters long.")
-    password = prompt_valid_input(
-        "Enter password: ",
-        valid_password,
-        "Invalid password format."
-    )
-    hashed = hash_password(password)
+    print("  1. Password must start with one of the following special characters: !@#$%^&*")
+    print("  2. Password must contain at least one digit, one lowercase letter, and one uppercase letter.")
+    print("  3. Password is between 6 and 12 letters long.")
+    password = prompt_valid_input("Enter password: ", valid_password, "Invalid password format.")
 
-    # IMPORTANT!!! CHANGE THIS AT SOME POINT!!!
-    # This is just a temporary measure so that we can test features that require the adminr role
-    role_choice = input("Register as admin? (y/n): ").lower()
+    role_choice = input("Register as admin? (y/n): ").strip().lower()
+    role = "admin" if role_choice == "y" else "user"
 
-    if role_choice == "y":
-        role = "admin"
-    else:
-        role = "user"
+    user = register_user(email=email, password=password, role=role)
+    if not user:
+        print("Registration failed.")
+        return
 
-    user = {
-        "email": email,
-        "password": hashed,
-        "role": role
-    }
-
-    add_user(user)
     print(f"Registration successful as {role}.")
 
 
 def login():
-    # Authenticate a user and start a session after a successful login
     attempts = 0
 
-    while attempts < 3: # Someone should work on better security lmao. Also add regex
+    while attempts < 3:
         print("\n--- Login ---")
-
-        email = prompt_valid_input(
-            "Enter email: ",
-            valid_email,
-            "Invalid email format."
-        )
+        email = prompt_valid_input("Enter email: ", valid_email, "Invalid email format.")
         password = input("Enter password: ")
 
-        user = find_user_by("email", email)
-        if user and user["password"] == hash_password(password):
-            role = user["role"]
+        user = login_user(email, password)
+        if user:
             login_session(user)
-            print(f"Welcome, {email}. You are logged in as {role}.")
+            print(f"Welcome, {email}. You are logged in as {user['role']}.")
             dashboard()
             return
 
@@ -119,7 +96,7 @@ def login():
 
     print("Too many failed attempts.")
 
-# Gives admins the admin menu and regular users the regular menu
+
 def dashboard():
     user = get_current_user()
 
@@ -128,7 +105,7 @@ def dashboard():
     else:
         user_menu()
 
-# User menu
+
 def user_menu():
     while True:
         print("\n--- User Dashboard ---")
@@ -139,16 +116,14 @@ def user_menu():
 
         if choice == "1":
             view_my_record()
-
         elif choice == "2":
             logout_session()
             print("Logged out.")
             break
-
         else:
             print("Invalid choice.")
 
-# Admin menu
+
 def admin_menu():
     while True:
         print("\n--- Admin Dashboard ---")
@@ -162,25 +137,20 @@ def admin_menu():
 
         if choice == "1":
             admin_add_student()
-
         elif choice == "2":
             admin_edit_student()
-
         elif choice == "3":
             admin_view_students()
-
         elif choice == "4":
             admin_delete_student()
-
         elif choice == "5":
             logout_session()
             print("Logged out.")
             break
-
         else:
             print("Invalid choice.")
 
-# Functions for admin menu
+
 def admin_add_student():
     print("\n--- Add Student ---")
 
@@ -191,15 +161,9 @@ def admin_add_student():
     gender = input("Gender: ")
     phone = prompt_valid_input("Phone: ", valid_phone, "Invalid phone format.")
     major = input("Major: ")
-
-    email = prompt_valid_input(
-        "Enter user email to link: ",
-        valid_email,
-        "Invalid email format."
-    )
+    email = prompt_valid_input("Enter user email to link: ", valid_email, "Invalid email format.")
 
     user = find_user_by("email", email)
-
     if not user:
         print("User not found. Create user first.")
         return
@@ -212,7 +176,7 @@ def admin_add_student():
         "gender": gender,
         "phone": phone,
         "major": major,
-        "grades": []
+        "grades": [],
     }
 
     add_student(student)
@@ -220,11 +184,11 @@ def admin_add_student():
 
     print("Student added and linked successfully.")
 
+
 def admin_edit_student():
     print("\n--- Edit Student ---")
 
     student_id = input("Enter student ID: ")
-
     student = find_student_by("id", student_id)
 
     if not student:
@@ -232,7 +196,6 @@ def admin_edit_student():
         return
 
     print("Leave blank to keep current value.")
-
     new_phone = input(f"Phone ({student['phone']}): ")
     new_major = input(f"Major ({student['major']}): ")
 
@@ -252,30 +215,27 @@ def admin_edit_student():
     else:
         print("Update failed.")
 
+
 def admin_view_students():
     students = get_all_students()
-
-    for s in students:
-        print(s)
+    for student in students:
+        print(student)
 
 
 def admin_delete_student():
     print("\n--- Delete Student ---")
 
     student_id = input("Enter student ID to delete: ")
-
     student = find_student_by("id", student_id)
 
     if not student:
         print("Student not found.")
         return
 
-    # Show what you're about to delete
     print("\nStudent found:")
     print(f"{student['first_name']} {student['last_name']} (ID: {student['id']})")
 
-    confirm = input("Are you sure you want to delete this student? (y/n): ").lower()
-
+    confirm = input("Are you sure you want to delete this student? (y/n): ").strip().lower()
     if confirm != "y":
         print("Deletion cancelled.")
         return
@@ -285,7 +245,7 @@ def admin_delete_student():
     else:
         print("Error deleting student.")
 
-# Functions for student menu
+
 def view_my_record():
     user = get_current_user()
 
@@ -294,7 +254,6 @@ def view_my_record():
         return
 
     student = find_student_by("id", user["student_id"])
-
     if not student:
         print("Student record not found.")
         return

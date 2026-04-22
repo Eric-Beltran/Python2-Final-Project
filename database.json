@@ -16,7 +16,7 @@
             "email": "jsmith@gmail.com",
             "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
             "role": "user",
-            "student_id": null
+            "student_id": "700700701"
         }
     ],
     "students": [
@@ -35,6 +35,16 @@
                     88
                 ]
             ]
+        },
+        {
+            "id": "700700701",
+            "first_name": "John",
+            "last_name": "Smith",
+            "age": 21,
+            "gender": "M",
+            "phone": "111-111-1111",
+            "major": "Computer Science",
+            "grades": []
         }
     ]
 }
