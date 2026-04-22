@@ -14,6 +14,7 @@ from data_handler import (
 from session_manager import get_current_user, login_session, logout_session
 from user import login_user, register_user
 from validator import valid_email, valid_name, valid_password, valid_phone
+from analytics import display_grade_graphs
 
 
 def prompt_valid_input(prompt_text, validator, error_message):
@@ -131,7 +132,8 @@ def admin_menu():
         print("2. Edit Student")
         print("3. View Students")
         print("4. Delete Student")
-        print("5. Logout")
+        print("5. View Grade Distribution")
+        print("6. Logout")
 
         choice = input("Choose: ")
 
@@ -144,6 +146,8 @@ def admin_menu():
         elif choice == "4":
             admin_delete_student()
         elif choice == "5":
+            display_grade_graphs("database.json")
+        elif choice == "6":
             logout_session()
             print("Logged out.")
             break
