@@ -1,6 +1,7 @@
 """
 """
 
+from analytics import display_grade_graphs
 from data_handler import add_user, find_user_by, get_all_students, add_student, link_user_to_student, update_student, find_student_by, delete_student
 from session_manager import login_session, logout_session, get_current_user
 import hashlib
@@ -127,7 +128,8 @@ def admin_menu():
         print("2. Edit Student")
         print("3. View Students")
         print("4. Delete Student")
-        print("5. Logout")
+        print("5. View Grade Distribution")
+        print("6. Logout")
 
         choice = input("Choose: ")
 
@@ -144,6 +146,9 @@ def admin_menu():
             admin_delete_student()
 
         elif choice == "5":
+            display_grade_graphs("database.json")
+
+        elif choice == "6":
             logout_session()
             print("Logged out.")
             break
