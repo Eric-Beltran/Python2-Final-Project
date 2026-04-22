@@ -3,11 +3,28 @@
 
 from data_handler import add_user, find_user_by, get_all_students, add_student, link_user_to_student, update_student, find_student_by, delete_student
 from session_manager import login_session, logout_session, get_current_user
+from validator import valid_name, valid_email, valid_phone, valid_password
 import hashlib
 
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
+
+
+def prompt_valid_input(prompt_text, validator, error_message):
+    while True:
+        value = input(prompt_text).strip()
+        if validator(value):
+            return value
+        print(error_message)
+
+
+def prompt_valid_age(prompt_text):
+    while True:
+        value = input(prompt_text).strip()
+        if value.isdigit():
+            return int(value)
+        print("Age must be a number.")
 
 # Main menu
 def main_menu():
@@ -36,7 +53,11 @@ def main_menu():
 def register():
     # Create a new user record if the email is not already registered.
     print("\n--- Register ---")
-    email = input("Enter email: ")
+    email = prompt_valid_input(
+        "Enter email: ",
+        valid_email,
+        "Invalid email format."
+    )
 
     if find_user_by("email", email):
         print("User already exists.")
@@ -45,7 +66,11 @@ def register():
     print("  \u2666 1. Password must start with one of the following special characters: !@#$%^&*")
     print("  \u2666 2. Password must contain at least one digit, one lowercase letter, and one uppercase letter.")
     print("  \u2666 3. Password is between 6 and 12 letters long.")
-    password = input("Enter password: ")
+    password = prompt_valid_input(
+        "Enter password: ",
+        valid_password,
+        "Invalid password format."
+    )
     hashed = hash_password(password)
 
     # IMPORTANT!!! CHANGE THIS AT SOME POINT!!!
@@ -64,7 +89,7 @@ def register():
     }
 
     add_user(user)
-    print("Registration successful as {role}.")
+    print(f"Registration successful as {role}.")
 
 
 def login():
@@ -74,7 +99,11 @@ def login():
     while attempts < 3: # Someone should work on better security lmao. Also add regex
         print("\n--- Login ---")
 
-        email = input("Enter email: ")
+        email = prompt_valid_input(
+            "Enter email: ",
+            valid_email,
+            "Invalid email format."
+        )
         password = input("Enter password: ")
 
         user = find_user_by("email", email)
@@ -156,14 +185,18 @@ def admin_add_student():
     print("\n--- Add Student ---")
 
     student_id = input("Enter student ID (700...): ")
-    first = input("First name: ")
-    last = input("Last name: ")
-    age = int(input("Age: "))
+    first = prompt_valid_input("First name: ", valid_name, "Invalid first name format.")
+    last = prompt_valid_input("Last name: ", valid_name, "Invalid last name format.")
+    age = prompt_valid_age("Age: ")
     gender = input("Gender: ")
-    phone = input("Phone: ")
+    phone = prompt_valid_input("Phone: ", valid_phone, "Invalid phone format.")
     major = input("Major: ")
 
-    email = input("Enter user email to link: ")
+    email = prompt_valid_input(
+        "Enter user email to link: ",
+        valid_email,
+        "Invalid email format."
+    )
 
     user = find_user_by("email", email)
 
@@ -206,6 +239,9 @@ def admin_edit_student():
     updates = {}
 
     if new_phone:
+        if not valid_phone(new_phone):
+            print("Invalid phone format.")
+            return
         updates["phone"] = new_phone
 
     if new_major:
