@@ -20,3 +20,4 @@ To do:
  - Some of the logic related to admin and user read/write permissions should be moved to the user.py file.
  - Someone should probably start working on getting basic GUI features set up.
  - Think about our required "additional features".
+ - matplotlib functionality 
