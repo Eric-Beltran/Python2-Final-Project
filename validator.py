@@ -2,7 +2,7 @@
 Runs only when registering a User
 Contains Regex functions for names (capitalized, no digits),
 phones (xxx-xxx-xxxx)
-specific email extensions (@yahoo, @gmail, @ucmo).
+specific email extensions (yahoo, gmail, ucmo).
 And password format
 """
 import re
@@ -14,7 +14,7 @@ def valid_name(name):
     return False
 
 def valid_email(email):
-    email_regex = r"(@yahoo\.|@ucmo\.|@gmail\.)"
+    email_regex = r"[A-Za-z0-9._%+-]+@(gmail\.com|yahoo\.|ucmo\.edu"
     if re.match(email_regex, email):
         return True
     return False
