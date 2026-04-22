@@ -14,7 +14,7 @@ def valid_name(name):
     return False
 
 def valid_email(email):
-    email_regex = r"(yahoo)(ucmo)(gmail)"
+    email_regex = r"[A-Za-z0-9._%+-]+@(gmail\.com|yahoo\.|ucmo\.edu)"
     if re.match(email_regex, email):
         return True
     return False
