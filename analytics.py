@@ -2,7 +2,7 @@
 Using matplotlib to create data visualization graphics specifically for
 student grades.
 
-Pulls directly from database.json
+Pulls directly from database.json in the menu
 '''
 
 import json
