@@ -13,9 +13,7 @@ class GradeManager:
         total = 0
         count = 0
 
-        # Loop through each inner list
         for row in grades:
-            # Loop through each grade inside that list
             for grade in row:
                 total += grade
                 count += 1
@@ -27,7 +25,7 @@ class GradeManager:
 
     @staticmethod
     def add_grade_row(grades, new_row):
-        # Add a whole new list of grades
+        # Add a whole new list of 2D grades
         grades.append(new_row)
         return grades
 

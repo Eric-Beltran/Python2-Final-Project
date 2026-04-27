@@ -4,6 +4,7 @@ Menu flow for the Secure Student Management System.
 
 from data_handler import (
     add_student,
+    create_student_record,
     delete_student,
     find_student_by,
     find_user_by,
@@ -11,6 +12,7 @@ from data_handler import (
     link_user_to_student,
     update_student,
 )
+from grade_manager import GradeManager
 from session_manager import get_current_user, login_session, logout_session
 from user import login_user, register_user
 from validator import valid_email, valid_name, valid_password, valid_phone
@@ -28,9 +30,36 @@ def prompt_valid_input(prompt_text, validator, error_message):
 def prompt_valid_age(prompt_text):
     while True:
         value = input(prompt_text).strip()
-        if value.isdigit():
+        if value.isdigit() and 16 <= int(value) <= 100:
             return int(value)
-        print("Age must be a number.")
+        print("Age must be a number between 16 and 100.")
+
+
+def prompt_student_information():
+    """
+    Ask for the student fields that are needed for a student record.
+    The ID is not asked for here because the system generates it automatically.
+    """
+    first = prompt_valid_input("First name: ", valid_name, "Invalid first name format.")
+    last = prompt_valid_input("Last name: ", valid_name, "Invalid last name format.")
+    age = prompt_valid_age("Age: ")
+    gender = input("Gender: ").strip()
+    phone = prompt_valid_input("Phone: ", valid_phone, "Invalid phone format.")
+    major = input("Major: ").strip()
+
+    return first, last, age, gender, phone, major
+
+
+def print_student_record(student):
+    """
+    Print a student record in one place so admins and users see the same format.
+    This also uses GradeManager to calculate the student's average.
+    """
+    for key, value in student.items():
+        print(f"{key}: {value}")
+
+    average = GradeManager.calculate_average(student.get("grades", []))
+    print(f"average: {average:.2f}")
 
 
 def main_menu():
@@ -69,12 +98,30 @@ def register():
     role_choice = input("Register as admin? (y/n): ").strip().lower()
     role = "admin" if role_choice == "y" else "user"
 
-    user = register_user(email=email, password=password, role=role)
+    if role == "admin":
+        user = register_user(email=email, password=password, role=role)
+        if not user:
+            print("Registration failed.")
+            return
+
+        print("Registration successful as admin.")
+        return
+
+    # If this is a student user, create and link the student record right away.
+    print("\n--- Student Information ---")
+    first, last, age, gender, phone, major = prompt_student_information()
+    student = create_student_record(first, last, age, gender, phone, major)
+
+    user = register_user(email=email, password=password, role=role, student_id=student["id"])
     if not user:
         print("Registration failed.")
         return
 
-    print(f"Registration successful as {role}.")
+    if add_student(student):
+        print(f"Registration successful as user.")
+        print(f"Generated student ID: {student['id']}")
+    else:
+        print("User was created, but the student record could not be saved.")
 
 
 def login():
@@ -158,13 +205,7 @@ def admin_menu():
 def admin_add_student():
     print("\n--- Add Student ---")
 
-    student_id = input("Enter student ID (700...): ")
-    first = prompt_valid_input("First name: ", valid_name, "Invalid first name format.")
-    last = prompt_valid_input("Last name: ", valid_name, "Invalid last name format.")
-    age = prompt_valid_age("Age: ")
-    gender = input("Gender: ")
-    phone = prompt_valid_input("Phone: ", valid_phone, "Invalid phone format.")
-    major = input("Major: ")
+    first, last, age, gender, phone, major = prompt_student_information()
     email = prompt_valid_input("Enter user email to link: ", valid_email, "Invalid email format.")
 
     user = find_user_by("email", email)
@@ -172,27 +213,24 @@ def admin_add_student():
         print("User not found. Create user first.")
         return
 
-    student = {
-        "id": student_id,
-        "first_name": first,
-        "last_name": last,
-        "age": age,
-        "gender": gender,
-        "phone": phone,
-        "major": major,
-        "grades": [],
-    }
+    if user.get("student_id"):
+        print("This user is already linked to a student record.")
+        return
 
-    add_student(student)
-    link_user_to_student(email, student_id)
+    student = create_student_record(first, last, age, gender, phone, major)
 
-    print("Student added and linked successfully.")
+    if add_student(student):
+        link_user_to_student(email, student["id"])
+        print("Student added and linked successfully.")
+        print(f"Generated student ID: {student['id']}")
+    else:
+        print("Student could not be added.")
 
 
 def admin_edit_student():
     print("\n--- Edit Student ---")
 
-    student_id = input("Enter student ID: ")
+    student_id = input("Enter student ID: ").strip()
     student = find_student_by("id", student_id)
 
     if not student:
@@ -200,8 +238,8 @@ def admin_edit_student():
         return
 
     print("Leave blank to keep current value.")
-    new_phone = input(f"Phone ({student['phone']}): ")
-    new_major = input(f"Major ({student['major']}): ")
+    new_phone = input(f"Phone ({student['phone']}): ").strip()
+    new_major = input(f"Major ({student['major']}): ").strip()
 
     updates = {}
 
@@ -222,14 +260,20 @@ def admin_edit_student():
 
 def admin_view_students():
     students = get_all_students()
+
+    if not students:
+        print("No students found.")
+        return
+
     for student in students:
-        print(student)
+        print("\n--- Student Record ---")
+        print_student_record(student)
 
 
 def admin_delete_student():
     print("\n--- Delete Student ---")
 
-    student_id = input("Enter student ID to delete: ")
+    student_id = input("Enter student ID to delete: ").strip()
     student = find_student_by("id", student_id)
 
     if not student:
@@ -263,5 +307,4 @@ def view_my_record():
         return
 
     print("\n--- My Student Record ---")
-    for key, value in student.items():
-        print(f"{key}: {value}")
+    print_student_record(student)

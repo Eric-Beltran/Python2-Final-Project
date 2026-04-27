@@ -1,21 +1,27 @@
 """
-When making a user will salt and hash the created password for storage
-When logging in takes the input password and compares to hashed password
-    • Dedicated to SHA-256 hashing.
-    • Note: Passwords must start with a special character from !@#$%^&* and be
-            6–12 characters long.
+When making a user will salt and hash the created password for storage.
+When logging in takes the input password and compares to hashed password.
 """
-import hashlib, os
 
-def hash_password(password):
-    salt = os.urandom(16)
-    hash_pass = hashlib.sha256(salt.encode()+password.encode())
+import hashlib
+import os
 
-    return hash_pass.hexdigest() + ":" + salt
 
-def check_password(password, hashed_password):
-    salt = hashed_password.split(":")[1]
-    hash_pass = hashlib.sha256(salt.encode()+password.encode())
-    if hash_pass.hexdigest() == hashed_password:
-        return True
-    return False
+def hash_password(password, salt=None):
+    """
+    Hash a password with SHA-256 and a salt.
+
+    Returns:
+    - hashed password
+    - salt as a hex string
+    """
+
+    if salt is None:
+        salt = os.urandom(16)
+
+    if isinstance(salt, str):
+        salt = bytes.fromhex(salt)
+
+    hashed_password = hashlib.sha256(salt + password.encode()).hexdigest()
+
+    return hashed_password, salt.hex()

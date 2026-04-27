@@ -1,4 +1,10 @@
 class StudentRecord:
+    """
+    This class stores the information for one student.
+
+    The project already uses "id" for student records, so this class keeps that
+    same naming style instead of changing it to something else.
+    """
 
     def __init__(self, student_id, first_name, last_name, age, gender, phone, major="", grades=None):
         self.id = student_id
@@ -14,6 +20,7 @@ class StudentRecord:
         return self.first_name + " " + self.last_name
 
     def to_dict(self):
+        # This converts the object into the same dictionary format database.json uses
         return {
             "id": self.id,
             "first_name": self.first_name,
@@ -27,6 +34,7 @@ class StudentRecord:
 
     @classmethod
     def from_dict(cls, data):
+        # This rebuilds a StudentRecord object from a dictionary loaded from JSON
         return cls(
             data["id"],
             data["first_name"],

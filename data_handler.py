@@ -1,5 +1,7 @@
 import json
+import random
 from pathlib import Path
+from student import StudentRecord
 
 DATABASE_FILE = Path(__file__).resolve().parent / "database.json"
 EMPTY_DATABASE = {"users": [], "students": []}
@@ -15,6 +17,9 @@ def load_data():
         with DATABASE_FILE.open("r", encoding="utf-8") as file:
             data = json.load(file)
 
+        # Make sure both main keys exist even if the JSON file is missing one
+        data.setdefault("users", [])
+        data.setdefault("students", [])
         return data
 
     except json.JSONDecodeError:
@@ -64,11 +69,66 @@ def find_student_by(field, value):
 
     return None
 
+
+def get_existing_student_ids():
+    # Store existing IDs in a set so checking duplicates is fast
+    data = load_data()
+    return {student.get("id") for student in data["students"]}
+
+
+def generate_student_id():
+    """
+    Generate a unique random 700###### ID.
+    Example: 700717441
+    """
+    existing_ids = get_existing_student_ids()
+
+    while True:
+        student_id = "700" + str(random.randint(100000, 999999))
+
+        if student_id not in existing_ids:
+            return student_id
+
+
+def create_student_record(first_name, last_name, age, gender, phone, major="", grades=None, student_id=None):
+    """
+    Create a student dictionary using the StudentRecord class.
+    This keeps the database naming style the same, especially using "id".
+    """
+    if student_id is None:
+        student_id = generate_student_id()
+
+    student = StudentRecord(
+        student_id,
+        first_name,
+        last_name,
+        int(age),
+        gender,
+        phone,
+        major,
+        grades if grades is not None else []
+    )
+
+    return student.to_dict()
+
+
 def add_student(student):
     # Append a student to the database
     data = load_data()
+
+    # If no ID was provided, generate one automatically
+    if not student.get("id"):
+        student["id"] = generate_student_id()
+
+    # Do not allow duplicate student IDs
+    if find_student_by("id", student["id"]):
+        print("Error: A student with this ID already exists.")
+        return False
+
     data["students"].append(student)
     save_data(data)
+    return True
+
 
 def update_student(student_id, updated_data):
     data = load_data()
@@ -80,6 +140,7 @@ def update_student(student_id, updated_data):
             return True
 
     return False
+
 
 def get_all_students():
     # Return all student data currently stored
@@ -112,6 +173,7 @@ def delete_student(student_id):
 
     save_data(data)
     return True
+
 
 def link_user_to_student(email, student_id):
     data = load_data()
