@@ -21,3 +21,9 @@ To do:
  - Someone should probably start working on getting basic GUI features set up.
  - Think about our required "additional features".
  - matplotlib functionality 
+
+Libraries:
+ - Json
+ - RE
+ - hashlib
+ - matplotlib
