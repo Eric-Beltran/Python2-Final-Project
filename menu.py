@@ -17,7 +17,7 @@ from grade_manager import GradeManager
 from session_manager import get_current_user, login_session, logout_session
 from user import login_user, register_user
 from validator import valid_email, valid_name, valid_password, valid_phone
-
+from reports import export_report_cards, export_student_roster
 
 def prompt_valid_input(prompt_text, validator, error_message):
     while True:
@@ -205,7 +205,8 @@ def admin_menu():
         print("4. Delete Student")
         print("5. Input Student Grades")
         print("6. View Grade Distribution")
-        print("7. Logout")
+        print("7. Export Student Data")
+        print("8. Logout")
 
         choice = input("Choose: ").strip()
 
@@ -222,6 +223,19 @@ def admin_menu():
         elif choice == "6":
             display_grade_graphs("database.json")
         elif choice == "7":
+            print("1. Export Student Report Cards")
+            print("2. Export Student Roster")
+            print("3. Exit Menu")
+
+            choice = input("Enter your choice: ")
+
+            if choice == "2":
+                export_student_roster()
+            elif choice == "1":
+                export_report_cards()
+            elif choice == "3":
+                break
+        elif choice == "8":
             logout_session()
             print("Logged out.")
             break
