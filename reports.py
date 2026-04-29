@@ -25,7 +25,7 @@ def export_student_roster():
         writer = csv.writer(file)
 
         #Column headers
-        writer.writerow(["Student ID", "First Name", "Last Name", "Age", "Gender", "Grade"])
+        writer.writerow(["Student ID", "First Name", "Last Name", "Age", "Gender", "Grades"])
 
         #Write each student into the CSV
         for student in students:
@@ -53,7 +53,7 @@ def export_report_cards():
         writer = csv.writer(file)
 
         #Column headers
-        writer.writerow(["Student ID", "Student Name", "Grade"])
+        writer.writerow(["Student ID", "Student Name", "Grades"])
 
         #Write each report card row
         for student in students:
