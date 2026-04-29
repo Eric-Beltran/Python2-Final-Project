@@ -59,6 +59,18 @@ def find_user_by(field, value):
     return None
 
 
+def update_user(email, updated_data):
+    data = load_data()
+
+    for user in data["users"]:
+        if user["email"] == email:
+            user.update(updated_data)
+            save_data(data)
+            return True
+
+    return False
+
+
 def find_student_by(field, value):
     # Searches a student by specified field
     data = load_data()
