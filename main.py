@@ -7,9 +7,7 @@ Can currently:
  - Displays a dashboard for the active session. Currently empty.
 
 Test logins:
- - Admin Email: admin@gmail.com, Admin Password: admin
- - User Email: test@gmail.com, User Password: password
- - John Email: jsmith@gmail.com, John Password: password
+ - Admin Email: admin@gmail.com, Admin Password: !1Password
 """
 
 from menu import main_menu

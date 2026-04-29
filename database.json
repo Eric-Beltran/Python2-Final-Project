@@ -7,16 +7,17 @@
             "student_id": "700700700"
         },
         {
-            "email": "admin@gmail.com",
-            "password": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
-            "role": "admin",
-            "student_id": null
-        },
-        {
             "email": "jsmith@gmail.com",
             "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
             "role": "user",
             "student_id": "700700701"
+        },
+        {
+            "email": "admin@gmail.com",
+            "password": "b9a34481064d8bd8a7425b2b91448e93b6e9e91a76f76aef2dd2bfe8e03e09d3",
+            "salt": "738e16de2b07667035bc91533cbd8f18",
+            "role": "admin",
+            "student_id": null
         }
     ],
     "students": [
@@ -30,9 +31,11 @@
             "major": "Business",
             "grades": [
                 [
-                    90,
-                    85,
-                    88
+                    61,
+                    72,
+                    83,
+                    94,
+                    100
                 ]
             ]
         },
@@ -44,7 +47,15 @@
             "gender": "M",
             "phone": "111-111-1111",
             "major": "Computer Science",
-            "grades": []
+            "grades": [
+                [
+                    11,
+                    22,
+                    33,
+                    44,
+                    55
+                ]
+            ]
         }
     ]
 }

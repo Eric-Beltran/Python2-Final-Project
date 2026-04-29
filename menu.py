@@ -2,6 +2,7 @@
 Menu flow for the Secure Student Management System.
 """
 
+from analytics import display_grade_graphs
 from data_handler import (
     add_student,
     create_student_record,
@@ -16,7 +17,6 @@ from grade_manager import GradeManager
 from session_manager import get_current_user, login_session, logout_session
 from user import login_user, register_user
 from validator import valid_email, valid_name, valid_password, valid_phone
-from analytics import display_grade_graphs
 
 
 def prompt_valid_input(prompt_text, validator, error_message):
@@ -33,6 +33,31 @@ def prompt_valid_age(prompt_text):
         if value.isdigit() and 16 <= int(value) <= 100:
             return int(value)
         print("Age must be a number between 16 and 100.")
+
+
+def prompt_grade_row():
+    while True:
+        raw_value = input("Enter grades separated by commas: ").strip()
+        if not raw_value:
+            print("Please enter at least one grade.")
+            continue
+
+        parts = [part.strip() for part in raw_value.split(",")]
+        grades = []
+
+        for part in parts:
+            if not part.isdigit():
+                print("Grades must be whole numbers between 0 and 100.")
+                break
+
+            grade = int(part)
+            if not 0 <= grade <= 100:
+                print("Grades must be whole numbers between 0 and 100.")
+                break
+
+            grades.append(grade)
+        else:
+            return grades
 
 
 def prompt_student_information():
@@ -64,19 +89,19 @@ def print_student_record(student):
 
 def main_menu():
     while True:
-        print("\n🔒=== Secure Student Management System ===🔒")
-        print("➤1. Register")
-        print("🔑2. Login")
-        print("❌3. Exit")
+        print("\n=== Secure Student Management System ===")
+        print("1. Register")
+        print("2. Login")
+        print("3. Exit")
 
-        choice = input("Enter choice: ")
+        choice = input("Enter choice: ").strip()
 
         if choice == "1":
             register()
         elif choice == "2":
             login()
         elif choice == "3":
-            print("❌Exiting.")
+            print("Exiting.")
             break
         else:
             print("Invalid choice.")
@@ -90,9 +115,9 @@ def register():
         print("User already exists.")
         return
 
-    print("  1. Password must start with one of the following special characters: !@#$%^&*")
-    print("  2. Password must contain at least one digit, one lowercase letter, and one uppercase letter.")
-    print("  3. Password is between 6 and 12 letters long.")
+    print("1. Password must start with one of the following special characters: !@#$%^&*")
+    print("2. Password must contain at least one digit, one lowercase letter, and one uppercase letter.")
+    print("3. Password is between 6 and 12 letters long.")
     password = prompt_valid_input("Enter password: ", valid_password, "Invalid password format.")
 
     role_choice = input("Register as admin? (y/n): ").strip().lower()
@@ -101,24 +126,23 @@ def register():
     if role == "admin":
         user = register_user(email=email, password=password, role=role)
         if not user:
-            print("❌Registration failed.❌")
+            print("Registration failed.")
             return
 
-        print("✅Registration successful as admin.✅")
+        print("Registration successful as admin.")
         return
 
-    # If this is a student user, create and link the student record right away.
     print("\n--- Student Information ---")
     first, last, age, gender, phone, major = prompt_student_information()
     student = create_student_record(first, last, age, gender, phone, major)
 
     user = register_user(email=email, password=password, role=role, student_id=student["id"])
     if not user:
-        print("❌Registration failed.❌")
+        print("Registration failed.")
         return
 
     if add_student(student):
-        print(f"✅Registration successful as user.✅")
+        print("Registration successful as user.")
         print(f"Generated student ID: {student['id']}")
     else:
         print("User was created, but the student record could not be saved.")
@@ -128,8 +152,8 @@ def login():
     attempts = 0
 
     while attempts < 3:
-        print("\n🔒--- Login ---🔒")
-        email = prompt_valid_input("Enter email: ", valid_email, "❌Invalid email format.❌")
+        print("\n--- Login ---")
+        email = prompt_valid_input("Enter email: ", valid_email, "Invalid email format.")
         password = input("Enter password: ")
 
         user = login_user(email, password)
@@ -140,9 +164,9 @@ def login():
             return
 
         attempts += 1
-        print(f"❌Invalid login. Attempts left: {3 - attempts}❌")
+        print(f"Invalid login. Attempts left: {3 - attempts}")
 
-    print("❌Too many failed attempts.❌")
+    print("Too many failed attempts.")
 
 
 def dashboard():
@@ -156,11 +180,11 @@ def dashboard():
 
 def user_menu():
     while True:
-        print("\n🔒--- User Dashboard ---🔒")
-        print("📊1. View My Records")
-        print("🚪2. Logout")
+        print("\n--- User Dashboard ---")
+        print("1. View My Records")
+        print("2. Logout")
 
-        choice = input("Choose: ")
+        choice = input("Choose: ").strip()
 
         if choice == "1":
             view_my_record()
@@ -169,20 +193,21 @@ def user_menu():
             print("Logged out.")
             break
         else:
-            print("❌Invalid choice.❌")
+            print("Invalid choice.")
 
 
 def admin_menu():
     while True:
-        print("\n🔒--- Admin Dashboard ---🔒")
-        print("➕1. Add Student")
-        print("✏2. Edit Student")
-        print("🔍3. View Students")
-        print("🗑4. Delete Student")
-        print("📊5. View Grade Distribution")
-        print("🚪6. Logout")
+        print("\n--- Admin Dashboard ---")
+        print("1. Add Student")
+        print("2. Edit Student")
+        print("3. View Students")
+        print("4. Delete Student")
+        print("5. Input Student Grades")
+        print("6. View Grade Distribution")
+        print("7. Logout")
 
-        choice = input("Choose: ")
+        choice = input("Choose: ").strip()
 
         if choice == "1":
             admin_add_student()
@@ -193,17 +218,19 @@ def admin_menu():
         elif choice == "4":
             admin_delete_student()
         elif choice == "5":
-            display_grade_graphs("database.json")
+            admin_input_grades()
         elif choice == "6":
+            display_grade_graphs("database.json")
+        elif choice == "7":
             logout_session()
             print("Logged out.")
             break
         else:
-            print("❌Invalid choice.❌")
+            print("Invalid choice.")
 
 
 def admin_add_student():
-    print("\n➕--- Add Student ---➕")
+    print("\n--- Add Student ---")
 
     first, last, age, gender, phone, major = prompt_student_information()
     email = prompt_valid_input("Enter user email to link: ", valid_email, "Invalid email format.")
@@ -224,11 +251,11 @@ def admin_add_student():
         print("Student added and linked successfully.")
         print(f"Generated student ID: {student['id']}")
     else:
-        print("❌Student could not be added.❌")
+        print("Student could not be added.")
 
 
 def admin_edit_student():
-    print("\n✏--- Edit Student ---✏")
+    print("\n--- Edit Student ---")
 
     student_id = input("Enter student ID: ").strip()
     student = find_student_by("id", student_id)
@@ -294,6 +321,28 @@ def admin_delete_student():
         print("Error deleting student.")
 
 
+def admin_input_grades():
+    print("\n--- Input Student Grades ---")
+
+    student_id = input("Enter student ID: ").strip()
+    student = find_student_by("id", student_id)
+
+    if not student:
+        print("Student not found.")
+        return
+
+    print(f"Entering grades for {student['first_name']} {student['last_name']} (ID: {student['id']})")
+    new_row = prompt_grade_row()
+    updated_grades = [new_row]
+
+    if update_student(student_id, {"grades": updated_grades}):
+        average = GradeManager.calculate_average(updated_grades)
+        print("Grades saved.")
+        print(f"New average: {average:.2f}")
+    else:
+        print("Failed to save grades.")
+
+
 def view_my_record():
     user = get_current_user()
 
@@ -306,5 +355,5 @@ def view_my_record():
         print("Student record not found.")
         return
 
-    print("\n🎓--- My Student Record ---🎓")
+    print("\n--- My Student Record ---")
     print_student_record(student)
