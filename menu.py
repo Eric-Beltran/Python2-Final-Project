@@ -64,10 +64,10 @@ def print_student_record(student):
 
 def main_menu():
     while True:
-        print("\n=== Secure Student Management System ===")
-        print("1. Register")
-        print("2. Login")
-        print("3. Exit")
+        print("\n🔒=== Secure Student Management System ===🔒")
+        print("➤1. Register")
+        print("🔑2. Login")
+        print("❌3. Exit")
 
         choice = input("Enter choice: ")
 
@@ -76,7 +76,7 @@ def main_menu():
         elif choice == "2":
             login()
         elif choice == "3":
-            print("Exiting.")
+            print("❌Exiting.")
             break
         else:
             print("Invalid choice.")
@@ -101,10 +101,10 @@ def register():
     if role == "admin":
         user = register_user(email=email, password=password, role=role)
         if not user:
-            print("Registration failed.")
+            print("❌Registration failed.❌")
             return
 
-        print("Registration successful as admin.")
+        print("✅Registration successful as admin.✅")
         return
 
     # If this is a student user, create and link the student record right away.
@@ -114,11 +114,11 @@ def register():
 
     user = register_user(email=email, password=password, role=role, student_id=student["id"])
     if not user:
-        print("Registration failed.")
+        print("❌Registration failed.❌")
         return
 
     if add_student(student):
-        print(f"Registration successful as user.")
+        print(f"✅Registration successful as user.✅")
         print(f"Generated student ID: {student['id']}")
     else:
         print("User was created, but the student record could not be saved.")
@@ -128,8 +128,8 @@ def login():
     attempts = 0
 
     while attempts < 3:
-        print("\n--- Login ---")
-        email = prompt_valid_input("Enter email: ", valid_email, "Invalid email format.")
+        print("\n🔒--- Login ---🔒")
+        email = prompt_valid_input("Enter email: ", valid_email, "❌Invalid email format.❌")
         password = input("Enter password: ")
 
         user = login_user(email, password)
@@ -140,9 +140,9 @@ def login():
             return
 
         attempts += 1
-        print(f"Invalid login. Attempts left: {3 - attempts}")
+        print(f"❌Invalid login. Attempts left: {3 - attempts}❌")
 
-    print("Too many failed attempts.")
+    print("❌Too many failed attempts.❌")
 
 
 def dashboard():
@@ -156,9 +156,9 @@ def dashboard():
 
 def user_menu():
     while True:
-        print("\n--- User Dashboard ---")
-        print("1. View My Records")
-        print("2. Logout")
+        print("\n🔒--- User Dashboard ---🔒")
+        print("📊1. View My Records")
+        print("🚪2. Logout")
 
         choice = input("Choose: ")
 
@@ -169,18 +169,18 @@ def user_menu():
             print("Logged out.")
             break
         else:
-            print("Invalid choice.")
+            print("❌Invalid choice.❌")
 
 
 def admin_menu():
     while True:
-        print("\n--- Admin Dashboard ---")
-        print("1. Add Student")
-        print("2. Edit Student")
-        print("3. View Students")
-        print("4. Delete Student")
-        print("5. View Grade Distribution")
-        print("6. Logout")
+        print("\n🔒--- Admin Dashboard ---🔒")
+        print("➕1. Add Student")
+        print("✏2. Edit Student")
+        print("🔍3. View Students")
+        print("🗑4. Delete Student")
+        print("📊5. View Grade Distribution")
+        print("🚪6. Logout")
 
         choice = input("Choose: ")
 
@@ -199,11 +199,11 @@ def admin_menu():
             print("Logged out.")
             break
         else:
-            print("Invalid choice.")
+            print("❌Invalid choice.❌")
 
 
 def admin_add_student():
-    print("\n--- Add Student ---")
+    print("\n➕--- Add Student ---➕")
 
     first, last, age, gender, phone, major = prompt_student_information()
     email = prompt_valid_input("Enter user email to link: ", valid_email, "Invalid email format.")
@@ -224,11 +224,11 @@ def admin_add_student():
         print("Student added and linked successfully.")
         print(f"Generated student ID: {student['id']}")
     else:
-        print("Student could not be added.")
+        print("❌Student could not be added.❌")
 
 
 def admin_edit_student():
-    print("\n--- Edit Student ---")
+    print("\n✏--- Edit Student ---✏")
 
     student_id = input("Enter student ID: ").strip()
     student = find_student_by("id", student_id)
@@ -306,5 +306,5 @@ def view_my_record():
         print("Student record not found.")
         return
 
-    print("\n--- My Student Record ---")
+    print("\n🎓--- My Student Record ---🎓")
     print_student_record(student)
