@@ -225,7 +225,7 @@ def admin_menu():
         elif choice == "7":
             print("1. Export Student Report Cards")
             print("2. Export Student Roster")
-            print("3. Exit Menu")
+
 
             choice = input("Enter your choice: ")
 
@@ -233,8 +233,8 @@ def admin_menu():
                 export_student_roster()
             elif choice == "1":
                 export_report_cards()
-            elif choice == "3":
-                break
+
+
         elif choice == "8":
             logout_session()
             print("Logged out.")
