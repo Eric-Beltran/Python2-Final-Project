@@ -11,6 +11,7 @@ from data_handler import (
     find_user_by,
     get_all_students,
     link_user_to_student,
+    update_user,
     update_student,
 )
 from grade_manager import GradeManager
@@ -120,23 +121,11 @@ def register():
     print("3. Password is between 6 and 12 letters long.")
     password = prompt_valid_input("Enter password: ", valid_password, "Invalid password format.")
 
-    role_choice = input("Register as admin? (y/n): ").strip().lower()
-    role = "admin" if role_choice == "y" else "user"
-
-    if role == "admin":
-        user = register_user(email=email, password=password, role=role)
-        if not user:
-            print("Registration failed.")
-            return
-
-        print("Registration successful as admin.")
-        return
-
     print("\n--- Student Information ---")
     first, last, age, gender, phone, major = prompt_student_information()
     student = create_student_record(first, last, age, gender, phone, major)
 
-    user = register_user(email=email, password=password, role=role, student_id=student["id"])
+    user = register_user(email=email, password=password, role="user", student_id=student["id"])
     if not user:
         print("Registration failed.")
         return
@@ -203,10 +192,11 @@ def admin_menu():
         print("2. Edit Student")
         print("3. View Students")
         print("4. Delete Student")
-        print("5. Input Student Grades")
-        print("6. View Grade Distribution")
-        print("7. Export Student Data")
-        print("8. Logout")
+        print("5. Elevate User To Admin")
+        print("6. Input Student Grades")
+        print("7. View Grade Distribution")
+        print("8. Export Student Data")
+        print("9. Logout")
 
         choice = input("Choose: ").strip()
 
@@ -219,13 +209,15 @@ def admin_menu():
         elif choice == "4":
             admin_delete_student()
         elif choice == "5":
-            admin_input_grades()
+            admin_elevate_user()
         elif choice == "6":
-            display_grade_graphs("database.json")
+            admin_input_grades()
         elif choice == "7":
+            display_grade_graphs("database.json")
+        elif choice == "8":
             print("1. Export Student Report Cards")
             print("2. Export Student Roster")
-            print("3. Exit Menu")
+
 
             choice = input("Enter your choice: ")
 
@@ -233,9 +225,9 @@ def admin_menu():
                 export_student_roster()
             elif choice == "1":
                 export_report_cards()
-            elif choice == "3":
-                break
-        elif choice == "8":
+
+
+        elif choice == "9":
             logout_session()
             print("Logged out.")
             break
@@ -355,6 +347,31 @@ def admin_input_grades():
         print(f"New average: {average:.2f}")
     else:
         print("Failed to save grades.")
+
+
+def admin_elevate_user():
+    print("\n--- Elevate User To Admin ---")
+
+    email = prompt_valid_input("Enter existing user email: ", valid_email, "Invalid email format.")
+    user = find_user_by("email", email)
+
+    if not user:
+        print("User not found.")
+        return
+
+    if user.get("role") == "admin":
+        print("That user is already an admin.")
+        return
+
+    confirm = input(f"Make {email} admin? (y/n): ").strip().lower()
+    if confirm != "y":
+        print("Cancelled.")
+        return
+
+    if update_user(email, {"role": "admin", "student_id": None}):
+        print("User elevated to admin successfully.")
+    else:
+        print("Failed to update user role.")
 
 
 def view_my_record():

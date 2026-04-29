@@ -9,8 +9,8 @@
         {
             "email": "jsmith@gmail.com",
             "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
-            "role": "user",
-            "student_id": "700700701"
+            "role": "admin",
+            "student_id": null
         },
         {
             "email": "admin@gmail.com",
@@ -18,6 +18,13 @@
             "salt": "738e16de2b07667035bc91533cbd8f18",
             "role": "admin",
             "student_id": null
+        },
+        {
+            "email": "test3@gmail.com",
+            "password": "444c94e63b847ebbda6b0ed4e2835cd1f84de74f700197b9994a91d96815cfa0",
+            "salt": "2ba2dc398267f0d17c684ba9dd1761a2",
+            "role": "user",
+            "student_id": "700307840"
         }
     ],
     "students": [
@@ -56,6 +63,16 @@
                     55
                 ]
             ]
+        },
+        {
+            "id": "700307840",
+            "first_name": "Jane",
+            "last_name": "Doe",
+            "age": 18,
+            "gender": "F",
+            "phone": "987-654-3210",
+            "major": "Undecided",
+            "grades": []
         }
     ]
 }
