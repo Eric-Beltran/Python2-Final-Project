@@ -90,10 +90,10 @@ def print_student_record(student):
 
 def main_menu():
     while True:
-        print("\n=== Secure Student Management System ===")
-        print("1. Register")
-        print("2. Login")
-        print("3. Exit")
+        print("\n🔒=== Secure Student Management System ===🔒")
+        print("🎓1. Register")
+        print("🔑2. Login")
+        print("🚪3. Exit")
 
         choice = input("Enter choice: ").strip()
 
@@ -105,15 +105,15 @@ def main_menu():
             print("Exiting.")
             break
         else:
-            print("Invalid choice.")
+            print("❌Invalid choice.❌")
 
 
 def register():
-    print("\n--- Register ---")
+    print("\n🔒--- Register ---🔒")
     email = prompt_valid_input("Enter email: ", valid_email, "Invalid email format.")
 
     if find_user_by("email", email):
-        print("User already exists.")
+        print("❌User already exists.❌")
         return
 
     print("1. Password must start with one of the following special characters: !@#$%^&*")
@@ -121,27 +121,27 @@ def register():
     print("3. Password is between 6 and 12 letters long.")
     password = prompt_valid_input("Enter password: ", valid_password, "Invalid password format.")
 
-    print("\n--- Student Information ---")
+    print("\n🔒--- Student Information ---🔒")
     first, last, age, gender, phone, major = prompt_student_information()
     student = create_student_record(first, last, age, gender, phone, major)
 
     user = register_user(email=email, password=password, role="user", student_id=student["id"])
     if not user:
-        print("Registration failed.")
+        print("❌Registration failed.❌")
         return
 
     if add_student(student):
-        print("Registration successful as user.")
-        print(f"Generated student ID: {student['id']}")
+        print("✅Registration successful as user.✅")
+        print(f"✅Generated student ID: {student['id']}✅")
     else:
-        print("User was created, but the student record could not be saved.")
+        print("❌User was created, but the student record could not be saved.❌")
 
 
 def login():
     attempts = 0
 
     while attempts < 3:
-        print("\n--- Login ---")
+        print("\n🔒--- Login ---🔒")
         email = prompt_valid_input("Enter email: ", valid_email, "Invalid email format.")
         password = input("Enter password: ")
 
@@ -153,9 +153,9 @@ def login():
             return
 
         attempts += 1
-        print(f"Invalid login. Attempts left: {3 - attempts}")
+        print(f"❌Invalid login. Attempts left: {3 - attempts}❌")
 
-    print("Too many failed attempts.")
+    print("❌Too many failed attempts.❌")
 
 
 def dashboard():
@@ -169,9 +169,9 @@ def dashboard():
 
 def user_menu():
     while True:
-        print("\n--- User Dashboard ---")
-        print("1. View My Records")
-        print("2. Logout")
+        print("\n🔒--- User Dashboard ---🔒")
+        print("📊1. View My Records")
+        print("🚪2. Logout")
 
         choice = input("Choose: ").strip()
 
@@ -179,24 +179,24 @@ def user_menu():
             view_my_record()
         elif choice == "2":
             logout_session()
-            print("Logged out.")
+            print("🚪Logged out.🚪")
             break
         else:
-            print("Invalid choice.")
+            print("❌Invalid choice.❌")
 
 
 def admin_menu():
     while True:
-        print("\n--- Admin Dashboard ---")
-        print("1. Add Student")
-        print("2. Edit Student")
-        print("3. View Students")
-        print("4. Delete Student")
-        print("5. Elevate User To Admin")
-        print("6. Input Student Grades")
-        print("7. View Grade Distribution")
-        print("8. Export Student Data")
-        print("9. Logout")
+        print("\n🔒--- Admin Dashboard ---🔒")
+        print("➕1. Add Student")
+        print("✏2. Edit Student")
+        print("🔎3. View Students")
+        print("🗑4. Delete Student")
+        print("👤5. Elevate User To Admin")
+        print("📖6. Input Student Grades")
+        print("📊7. View Grade Distribution")
+        print("📝8. Export Student Data")
+        print("🚪9. Logout")
 
         choice = input("Choose: ").strip()
 
@@ -229,45 +229,45 @@ def admin_menu():
 
         elif choice == "9":
             logout_session()
-            print("Logged out.")
+            print("🚪Logged out.🚪")
             break
         else:
-            print("Invalid choice.")
+            print("❌Invalid choice.❌")
 
 
 def admin_add_student():
-    print("\n--- Add Student ---")
+    print("\n➕--- Add Student ---➕")
 
     first, last, age, gender, phone, major = prompt_student_information()
     email = prompt_valid_input("Enter user email to link: ", valid_email, "Invalid email format.")
 
     user = find_user_by("email", email)
     if not user:
-        print("User not found. Create user first.")
+        print("❌User not found. Create user first.❌")
         return
 
     if user.get("student_id"):
-        print("This user is already linked to a student record.")
+        print("❌This user is already linked to a student record.❌")
         return
 
     student = create_student_record(first, last, age, gender, phone, major)
 
     if add_student(student):
         link_user_to_student(email, student["id"])
-        print("Student added and linked successfully.")
-        print(f"Generated student ID: {student['id']}")
+        print("✅Student added and linked successfully.✅")
+        print(f"✅Generated student ID: {student['id']}✅")
     else:
         print("Student could not be added.")
 
 
 def admin_edit_student():
-    print("\n--- Edit Student ---")
+    print("\n📝--- Edit Student ---📝")
 
     student_id = input("Enter student ID: ").strip()
     student = find_student_by("id", student_id)
 
     if not student:
-        print("Student not found.")
+        print("❌Student not found.❌")
         return
 
     print("Leave blank to keep current value.")
@@ -278,7 +278,7 @@ def admin_edit_student():
 
     if new_phone:
         if not valid_phone(new_phone):
-            print("Invalid phone format.")
+            print("❌Invalid phone format.❌")
             return
         updates["phone"] = new_phone
 
@@ -286,16 +286,16 @@ def admin_edit_student():
         updates["major"] = new_major
 
     if update_student(student_id, updates):
-        print("Student updated.")
+        print("✅Student updated.✅")
     else:
-        print("Update failed.")
+        print("❌Update failed.❌")
 
 
 def admin_view_students():
     students = get_all_students()
 
     if not students:
-        print("No students found.")
+        print("❌No students found.❌")
         return
 
     for student in students:
@@ -304,13 +304,13 @@ def admin_view_students():
 
 
 def admin_delete_student():
-    print("\n--- Delete Student ---")
+    print("\n🗑--- Delete Student ---🗑")
 
     student_id = input("Enter student ID to delete: ").strip()
     student = find_student_by("id", student_id)
 
     if not student:
-        print("Student not found.")
+        print("❌Student not found.❌")
         return
 
     print("\nStudent found:")
@@ -324,17 +324,17 @@ def admin_delete_student():
     if delete_student(student_id):
         print("Student deleted successfully.")
     else:
-        print("Error deleting student.")
+        print("❌Error deleting student.❌")
 
 
 def admin_input_grades():
-    print("\n--- Input Student Grades ---")
+    print("\n📝--- Input Student Grades ---📝")
 
     student_id = input("Enter student ID: ").strip()
     student = find_student_by("id", student_id)
 
     if not student:
-        print("Student not found.")
+        print("❌Student not found.❌")
         return
 
     print(f"Entering grades for {student['first_name']} {student['last_name']} (ID: {student['id']})")
@@ -343,10 +343,10 @@ def admin_input_grades():
 
     if update_student(student_id, {"grades": updated_grades}):
         average = GradeManager.calculate_average(updated_grades)
-        print("Grades saved.")
+        print("✅Grades saved.✅")
         print(f"New average: {average:.2f}")
     else:
-        print("Failed to save grades.")
+        print("❌Failed to save grades.❌")
 
 
 def admin_elevate_user():
@@ -356,11 +356,11 @@ def admin_elevate_user():
     user = find_user_by("email", email)
 
     if not user:
-        print("User not found.")
+        print("❌User not found.❌")
         return
 
     if user.get("role") == "admin":
-        print("That user is already an admin.")
+        print("❌That user is already an admin.❌")
         return
 
     confirm = input(f"Make {email} admin? (y/n): ").strip().lower()
@@ -371,20 +371,20 @@ def admin_elevate_user():
     if update_user(email, {"role": "admin", "student_id": None}):
         print("User elevated to admin successfully.")
     else:
-        print("Failed to update user role.")
+        print("❌Failed to update user role.❌")
 
 
 def view_my_record():
     user = get_current_user()
 
     if not user.get("student_id"):
-        print("No student record linked.")
+        print("❌No student record linked.❌")
         return
 
     student = find_student_by("id", user["student_id"])
     if not student:
-        print("Student record not found.")
+        print("❌Student record not found.❌")
         return
 
-    print("\n--- My Student Record ---")
+    print("\n🎓--- My Student Record ---🎓")
     print_student_record(student)
