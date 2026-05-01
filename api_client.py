@@ -4,7 +4,7 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 
-API_BASE = os.environ.get("API_BASE", "http://localhost:5000").rstrip("/")
+API_BASE = os.environ.get("3.131.90.50", "http://localhost:5000").rstrip("/")
 _token = None
 
 
