@@ -213,7 +213,7 @@ def admin_menu():
         elif choice == "6":
             admin_input_grades()
         elif choice == "7":
-            display_grade_graphs("database.json")
+            display_grade_graphs()
         elif choice == "8":
             print("1. Export Student Report Cards")
             print("2. Export Student Roster")

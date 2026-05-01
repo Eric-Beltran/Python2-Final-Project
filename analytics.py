@@ -2,20 +2,19 @@
 Using matplotlib to create data visualization graphics specifically for
 student grades.
 
-Pulls directly from database.json in the menu.
 '''
 
-import json
 import matplotlib.pyplot as plt
+from data_handler import get_all_students
 from grade_manager import GradeManager
 
 
-def display_grade_graphs(filename):
-    # load JSON data
-    with open(filename, "r") as file:
-        data = json.load(file)
+def display_grade_graphs():
+    students = get_all_students()
 
-    students = data["students"]
+    if not students:
+        print("No students found.")
+        return
 
     # lists to store results
     student_names = []

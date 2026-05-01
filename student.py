@@ -20,7 +20,7 @@ class StudentRecord:
         return self.first_name + " " + self.last_name
 
     def to_dict(self):
-        # This converts the object into the same dictionary format database.json uses
+        # This converts the object into the same dictionary format the database uses
         return {
             "id": self.id,
             "first_name": self.first_name,

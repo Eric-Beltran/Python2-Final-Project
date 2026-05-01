@@ -1,24 +1,17 @@
 #reports.py
-#This file creates CSV reports from database.json
+#This file creates CSV reports from the DynamoDB student table
 
-import json
 import csv
+from data_handler import get_all_students
 
 
-def load_database():
-    #Open and read the database.json file
-    with open("database.json", "r") as file:
-        data = json.load(file)
-
-    return data
+def load_students():
+    # Read student data through data_handler so reports use the same DynamoDB path.
+    return get_all_students()
 
 
 def export_student_roster():
-    #Load the data from database.json
-    data = load_database()
-
-    #Get the student list
-    students = data["students"]
+    students = load_students()
 
     #Create the CSV file
     with open("student_roster.csv", "w", newline="") as file:
@@ -42,11 +35,7 @@ def export_student_roster():
 
 
 def export_report_cards():
-    #Load the data from database.json
-    data = load_database()
-
-    #Get the student list
-    students = data["students"]
+    students = load_students()
 
     #Create the CSV file
     with open("report_cards.csv", "w", newline="") as file:
