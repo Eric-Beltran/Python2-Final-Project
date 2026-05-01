@@ -26,4 +26,6 @@ Libraries:
  - Json
  - RE
  - hashlib
- - matplotlib
+ - matplotlib.pyplot
+ - datetime
+ - urllib
