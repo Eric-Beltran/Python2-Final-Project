@@ -85,8 +85,11 @@ def register_user(email, password, role="user", student_id=None):
             salt=salt
         )
 
-    add_user(user_obj.to_dict())
-    return user_obj.to_dict()
+    user_dict = user_obj.to_dict()
+    if not add_user(user_dict):
+        return None
+
+    return user_dict
 
 
 def login_user(email, password):

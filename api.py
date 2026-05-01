@@ -17,6 +17,7 @@ from data_handler import (
     delete_student,
     find_student_by,
     find_user_by,
+    get_last_error,
     get_existing_student_ids,
     get_all_students,
     link_user_to_student,
@@ -122,24 +123,53 @@ class ApiHandler(BaseHTTPRequestHandler):
             self.send_json(200, {"status": "ok"})
             return
 
+        if path == "/health/db":
+            get_all_students()
+            error = get_last_error()
+            if error:
+                self.send_json(500, {"status": "error", "error": error})
+                return
+            self.send_json(200, {"status": "ok"})
+            return
+
         if path == "/data/users/find":
             field = query.get("field", [""])[0]
             value = query.get("value", [""])[0]
-            self.send_json(200, {"item": find_user_by(field, value)})
+            item = find_user_by(field, value)
+            error = get_last_error()
+            if error:
+                self.send_json(500, {"error": error})
+                return
+            self.send_json(200, {"item": item})
             return
 
         if path == "/data/students":
-            self.send_json(200, get_all_students())
+            students = get_all_students()
+            error = get_last_error()
+            if error:
+                self.send_json(500, {"error": error})
+                return
+            self.send_json(200, students)
             return
 
         if path == "/data/students/ids":
-            self.send_json(200, list(get_existing_student_ids()))
+            student_ids = get_existing_student_ids()
+            error = get_last_error()
+            if error:
+                self.send_json(500, {"error": error})
+                return
+            self.send_json(200, list(student_ids))
             return
 
         if path == "/data/students/find":
             field = query.get("field", [""])[0]
             value = query.get("value", [""])[0]
-            self.send_json(200, {"item": find_student_by(field, value)})
+            item = find_student_by(field, value)
+            error = get_last_error()
+            if error:
+                self.send_json(500, {"error": error})
+                return
+            self.send_json(200, {"item": item})
             return
 
         if path == "/students":
@@ -229,7 +259,9 @@ class ApiHandler(BaseHTTPRequestHandler):
             if not body:
                 self.send_json(400, {"error": "Missing user data"})
                 return
-            add_user(body)
+            if not add_user(body):
+                self.send_json(500, {"error": get_last_error() or "User could not be created"})
+                return
             self.send_json(201, {"status": "created"})
             return
 
@@ -238,7 +270,7 @@ class ApiHandler(BaseHTTPRequestHandler):
                 self.send_json(400, {"error": "Missing student data"})
                 return
             if not add_student(body):
-                self.send_json(500, {"error": "Student could not be created"})
+                self.send_json(500, {"error": get_last_error() or "Student could not be created"})
                 return
             self.send_json(201, {"status": "created", "student": body})
             return

@@ -2,6 +2,8 @@ import random
 import os
 from student import StudentRecord
 
+LAST_ERROR = None
+
 
 def using_remote_api():
     return (
@@ -10,14 +12,33 @@ def using_remote_api():
     )
 
 
+def clear_last_error():
+    global LAST_ERROR
+    LAST_ERROR = None
+
+
+def set_last_error(message):
+    global LAST_ERROR
+    LAST_ERROR = message
+
+
+def get_last_error():
+    return LAST_ERROR
+
+
 if not using_remote_api():
     import boto3
     from boto3.dynamodb.conditions import Attr
-    from botocore.exceptions import ClientError
 
     dynamodb = boto3.resource("dynamodb", region_name=os.environ.get("AWS_REGION", "us-east-2"))
     users_table = dynamodb.Table("Users")
     students_table = dynamodb.Table("Students")
+
+
+def error_message(error):
+    if hasattr(error, "response"):
+        return error.response.get("Error", {}).get("Message", str(error))
+    return str(error)
 
 
 def scan_all(table, **kwargs):
@@ -40,11 +61,14 @@ def add_user(user):
         import api_client
         return api_client.add_user(user)
 
+    clear_last_error()
     try:
         users_table.put_item(Item=user)
         return True
-    except ClientError as e:
-        print(f"Error adding user: {e.response['Error']['Message']}")
+    except Exception as e:
+        message = error_message(e)
+        set_last_error(message)
+        print(f"Error adding user: {message}")
         return False
 
 
@@ -53,6 +77,7 @@ def find_user_by(field, value):
         import api_client
         return api_client.find_user_by(field, value)
 
+    clear_last_error()
     try:
         if field == "email":
             # Email is the partition key, so we can do a fast direct lookup
@@ -65,8 +90,10 @@ def find_user_by(field, value):
                 FilterExpression=Attr(field).eq(value)
             )
             return items[0] if items else None
-    except ClientError as e:
-        print(f"Error finding user: {e.response['Error']['Message']}")
+    except Exception as e:
+        message = error_message(e)
+        set_last_error(message)
+        print(f"Error finding user: {message}")
         return None
 
 
@@ -78,6 +105,7 @@ def update_user(email, updated_data):
     if not updated_data:
         return True
 
+    clear_last_error()
     try:
         # Build the UpdateExpression dynamically from whatever fields are passed in
         expr = "SET " + ", ".join(f"#k{i} = :v{i}" for i in range(len(updated_data)))
@@ -91,8 +119,10 @@ def update_user(email, updated_data):
             ExpressionAttributeValues=values,
         )
         return True
-    except ClientError as e:
-        print(f"Error updating user: {e.response['Error']['Message']}")
+    except Exception as e:
+        message = error_message(e)
+        set_last_error(message)
+        print(f"Error updating user: {message}")
         return False
 
 
@@ -103,6 +133,7 @@ def find_student_by(field, value):
         import api_client
         return api_client.find_student_by(field, value)
 
+    clear_last_error()
     try:
         if field == "id":
             response = students_table.get_item(Key={"id": value})
@@ -113,8 +144,10 @@ def find_student_by(field, value):
                 FilterExpression=Attr(field).eq(value)
             )
             return items[0] if items else None
-    except ClientError as e:
-        print(f"Error finding student: {e.response['Error']['Message']}")
+    except Exception as e:
+        message = error_message(e)
+        set_last_error(message)
+        print(f"Error finding student: {message}")
         return None
 
 
@@ -123,10 +156,13 @@ def get_existing_student_ids():
         import api_client
         return api_client.get_existing_student_ids()
 
+    clear_last_error()
     try:
         return {item["id"] for item in scan_all(students_table, ProjectionExpression="id")}
-    except ClientError as e:
-        print(f"Error fetching IDs: {e.response['Error']['Message']}")
+    except Exception as e:
+        message = error_message(e)
+        set_last_error(message)
+        print(f"Error fetching IDs: {message}")
         return set()
 
 
@@ -160,11 +196,14 @@ def add_student(student):
         print("Error: A student with this ID already exists.")
         return False
 
+    clear_last_error()
     try:
         students_table.put_item(Item=student)
         return True
-    except ClientError as e:
-        print(f"Error adding student: {e.response['Error']['Message']}")
+    except Exception as e:
+        message = error_message(e)
+        set_last_error(message)
+        print(f"Error adding student: {message}")
         return False
 
 
@@ -176,6 +215,7 @@ def update_student(student_id, updated_data):
     if not updated_data:
         return True
 
+    clear_last_error()
     try:
         expr = "SET " + ", ".join(f"#k{i} = :v{i}" for i in range(len(updated_data)))
         names = {f"#k{i}": k for i, k in enumerate(updated_data.keys())}
@@ -188,8 +228,10 @@ def update_student(student_id, updated_data):
             ExpressionAttributeValues=values,
         )
         return True
-    except ClientError as e:
-        print(f"Error updating student: {e.response['Error']['Message']}")
+    except Exception as e:
+        message = error_message(e)
+        set_last_error(message)
+        print(f"Error updating student: {message}")
         return False
 
 
@@ -198,10 +240,13 @@ def get_all_students():
         import api_client
         return api_client.get_all_students()
 
+    clear_last_error()
     try:
         return scan_all(students_table)
-    except ClientError as e:
-        print(f"Error fetching students: {e.response['Error']['Message']}")
+    except Exception as e:
+        message = error_message(e)
+        set_last_error(message)
+        print(f"Error fetching students: {message}")
         return []
 
 
@@ -212,6 +257,7 @@ def delete_student(student_id):
 
     if not find_student_by("id", student_id):
         return False
+    clear_last_error()
     try:
         students_table.delete_item(Key={"id": student_id})
 
@@ -221,8 +267,10 @@ def delete_student(student_id):
             update_user(user["email"], {"student_id": None})
 
         return True
-    except ClientError as e:
-        print(f"Error deleting student: {e.response['Error']['Message']}")
+    except Exception as e:
+        message = error_message(e)
+        set_last_error(message)
+        print(f"Error deleting student: {message}")
         return False
 
 
