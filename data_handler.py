@@ -10,6 +10,13 @@ users_table = dynamodb.Table("Users")
 students_table = dynamodb.Table("Students")
 
 
+def using_remote_api():
+    return (
+        os.environ.get("RUNNING_API_SERVER") != "1"
+        and os.environ.get("USE_REMOTE_API", "1") == "1"
+    )
+
+
 def scan_all(table, **kwargs):
     items = []
     response = table.scan(**kwargs)
@@ -26,13 +33,23 @@ def scan_all(table, **kwargs):
 
 
 def add_user(user):
+    if using_remote_api():
+        import api_client
+        return api_client.add_user(user)
+
     try:
         users_table.put_item(Item=user)
+        return True
     except ClientError as e:
         print(f"Error adding user: {e.response['Error']['Message']}")
+        return False
 
 
 def find_user_by(field, value):
+    if using_remote_api():
+        import api_client
+        return api_client.find_user_by(field, value)
+
     try:
         if field == "email":
             # Email is the partition key, so we can do a fast direct lookup
@@ -51,6 +68,10 @@ def find_user_by(field, value):
 
 
 def update_user(email, updated_data):
+    if using_remote_api():
+        import api_client
+        return api_client.update_user(email, updated_data)
+
     if not updated_data:
         return True
 
@@ -75,6 +96,10 @@ def update_user(email, updated_data):
 # ── Students ─────────────────────────────────────────────────────────────────
 
 def find_student_by(field, value):
+    if using_remote_api():
+        import api_client
+        return api_client.find_student_by(field, value)
+
     try:
         if field == "id":
             response = students_table.get_item(Key={"id": value})
@@ -91,6 +116,10 @@ def find_student_by(field, value):
 
 
 def get_existing_student_ids():
+    if using_remote_api():
+        import api_client
+        return api_client.get_existing_student_ids()
+
     try:
         return {item["id"] for item in scan_all(students_table, ProjectionExpression="id")}
     except ClientError as e:
@@ -117,6 +146,10 @@ def create_student_record(first_name, last_name, age, gender, phone, major="", g
 
 
 def add_student(student):
+    if using_remote_api():
+        import api_client
+        return api_client.add_student(student)
+
     if not student.get("id"):
         student["id"] = generate_student_id()
 
@@ -133,6 +166,10 @@ def add_student(student):
 
 
 def update_student(student_id, updated_data):
+    if using_remote_api():
+        import api_client
+        return api_client.update_student_direct(student_id, updated_data)
+
     if not updated_data:
         return True
 
@@ -154,6 +191,10 @@ def update_student(student_id, updated_data):
 
 
 def get_all_students():
+    if using_remote_api():
+        import api_client
+        return api_client.get_all_students()
+
     try:
         return scan_all(students_table)
     except ClientError as e:
@@ -162,6 +203,10 @@ def get_all_students():
 
 
 def delete_student(student_id):
+    if using_remote_api():
+        import api_client
+        return api_client.delete_student_direct(student_id)
+
     if not find_student_by("id", student_id):
         return False
     try:
@@ -179,4 +224,8 @@ def delete_student(student_id):
 
 
 def link_user_to_student(email, student_id):
+    if using_remote_api():
+        import api_client
+        return api_client.link_user_to_student(email, student_id)
+
     return update_user(email, {"student_id": student_id})

@@ -2,9 +2,10 @@ import json
 import os
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
+from urllib.parse import quote, urlencode
 
 
-API_BASE = os.environ.get("3.131.90.50", "http://localhost:5000").rstrip("/")
+API_BASE = os.environ.get("API_BASE", "http://3.131.90.50:5000").rstrip("/")
 _token = None
 
 
@@ -73,3 +74,54 @@ def update_student(student_id, updated_data):
 def delete_student(student_id):
     status, data = request_json("DELETE", f"/students/{student_id}", token_required=True)
     return status == 200
+
+
+def find_user_by(field, value):
+    query = urlencode({"field": field, "value": value})
+    status, data = request_json("GET", f"/data/users/find?{query}")
+    return data.get("item") if status == 200 and data else None
+
+
+def add_user(user):
+    status, data = request_json("POST", "/data/users", user)
+    return status == 201
+
+
+def update_user(email, updated_data):
+    status, data = request_json("PUT", f"/data/users/{quote(email, safe='')}", updated_data)
+    return status == 200
+
+
+def find_student_by(field, value):
+    query = urlencode({"field": field, "value": value})
+    status, data = request_json("GET", f"/data/students/find?{query}")
+    return data.get("item") if status == 200 and data else None
+
+
+def get_existing_student_ids():
+    status, data = request_json("GET", "/data/students/ids")
+    return set(data) if status == 200 and data else set()
+
+
+def add_student(student):
+    status, data = request_json("POST", "/data/students", student)
+    return status == 201
+
+
+def update_student_direct(student_id, updated_data):
+    status, data = request_json("PUT", f"/data/students/{student_id}", updated_data)
+    return status == 200
+
+
+def get_all_students():
+    status, data = request_json("GET", "/data/students")
+    return data if status == 200 and data else []
+
+
+def delete_student_direct(student_id):
+    status, data = request_json("DELETE", f"/data/students/{student_id}")
+    return status == 200
+
+
+def link_user_to_student(email, student_id):
+    return update_user(email, {"student_id": student_id})

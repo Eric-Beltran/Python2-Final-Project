@@ -6,15 +6,22 @@ import json
 import os
 from decimal import Decimal
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, unquote, urlparse
+
+os.environ["RUNNING_API_SERVER"] = "1"
 
 from data_handler import (
+    add_user,
     add_student,
     create_student_record,
     delete_student,
     find_student_by,
+    find_user_by,
+    get_existing_student_ids,
     get_all_students,
+    link_user_to_student,
     update_student,
+    update_user,
 )
 from user import login_user
 
@@ -107,10 +114,32 @@ class ApiHandler(BaseHTTPRequestHandler):
         return user
 
     def do_GET(self):
-        path = urlparse(self.path).path
+        parsed_url = urlparse(self.path)
+        path = parsed_url.path
+        query = parse_qs(parsed_url.query)
 
         if path == "/health":
             self.send_json(200, {"status": "ok"})
+            return
+
+        if path == "/data/users/find":
+            field = query.get("field", [""])[0]
+            value = query.get("value", [""])[0]
+            self.send_json(200, {"item": find_user_by(field, value)})
+            return
+
+        if path == "/data/students":
+            self.send_json(200, get_all_students())
+            return
+
+        if path == "/data/students/ids":
+            self.send_json(200, list(get_existing_student_ids()))
+            return
+
+        if path == "/data/students/find":
+            field = query.get("field", [""])[0]
+            value = query.get("value", [""])[0]
+            self.send_json(200, {"item": find_student_by(field, value)})
             return
 
         if path == "/students":
@@ -196,6 +225,24 @@ class ApiHandler(BaseHTTPRequestHandler):
             self.send_json(201, student)
             return
 
+        if path == "/data/users":
+            if not body:
+                self.send_json(400, {"error": "Missing user data"})
+                return
+            add_user(body)
+            self.send_json(201, {"status": "created"})
+            return
+
+        if path == "/data/students":
+            if not body:
+                self.send_json(400, {"error": "Missing student data"})
+                return
+            if not add_student(body):
+                self.send_json(500, {"error": "Student could not be created"})
+                return
+            self.send_json(201, {"status": "created", "student": body})
+            return
+
         self.send_json(404, {"error": "Not found"})
 
     def do_PUT(self):
@@ -203,6 +250,22 @@ class ApiHandler(BaseHTTPRequestHandler):
         body = self.read_json()
         if body is None:
             self.send_json(400, {"error": "Invalid JSON"})
+            return
+
+        if path.startswith("/data/users/"):
+            email = unquote(path.split("/", 3)[3])
+            if not update_user(email, body):
+                self.send_json(500, {"error": "User could not be updated"})
+                return
+            self.send_json(200, {"status": "updated"})
+            return
+
+        if path.startswith("/data/students/"):
+            student_id = path.split("/", 3)[3]
+            if not update_student(student_id, body):
+                self.send_json(500, {"error": "Student could not be updated"})
+                return
+            self.send_json(200, {"status": "updated"})
             return
 
         if not path.startswith("/students/"):
@@ -239,6 +302,14 @@ class ApiHandler(BaseHTTPRequestHandler):
 
     def do_DELETE(self):
         path = urlparse(self.path).path
+        if path.startswith("/data/students/"):
+            student_id = path.split("/", 3)[3]
+            if not delete_student(student_id):
+                self.send_json(404, {"error": "Student not found or could not be deleted"})
+                return
+            self.send_json(200, {"status": "deleted"})
+            return
+
         if not path.startswith("/students/"):
             self.send_json(404, {"error": "Not found"})
             return
