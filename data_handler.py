@@ -1,10 +1,11 @@
 import random
+import os
 import boto3
 from boto3.dynamodb.conditions import Attr
 from botocore.exceptions import ClientError
 from student import StudentRecord
 
-dynamodb = boto3.resource("dynamodb", region_name="us-east-2")
+dynamodb = boto3.resource("dynamodb", region_name=os.environ.get("AWS_REGION", "us-east-2"))
 users_table = dynamodb.Table("Users")
 students_table = dynamodb.Table("Students")
 
