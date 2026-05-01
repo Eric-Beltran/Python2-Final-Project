@@ -15,6 +15,7 @@ from data_handler import (
     add_student,
     create_student_record,
     delete_student,
+    delete_user,
     find_student_by,
     find_user_by,
     get_last_error,
@@ -334,6 +335,14 @@ class ApiHandler(BaseHTTPRequestHandler):
 
     def do_DELETE(self):
         path = urlparse(self.path).path
+        if path.startswith("/data/users/"):
+            email = unquote(path.split("/", 3)[3])
+            if not delete_user(email):
+                self.send_json(404, {"error": "User not found or could not be deleted"})
+                return
+            self.send_json(200, {"status": "deleted"})
+            return
+
         if path.startswith("/data/students/"):
             student_id = path.split("/", 3)[3]
             if not delete_student(student_id):

@@ -7,6 +7,7 @@ from data_handler import (
     add_student,
     create_student_record,
     delete_student,
+    delete_user,
     find_student_by,
     find_user_by,
     get_all_students,
@@ -192,11 +193,12 @@ def admin_menu():
         print("✏2. Edit Student")
         print("🔎3. View Students")
         print("🗑4. Delete Student")
-        print("👤5. Elevate User To Admin")
-        print("📖6. Input Student Grades")
-        print("📊7. View Grade Distribution")
-        print("📝8. Export Student Data")
-        print("🚪9. Logout")
+        print("👤5. Delete User")
+        print("👤6. Manage User Admin Role")
+        print("📖7. Input Student Grades")
+        print("📊8. View Grade Distribution")
+        print("📝9. Export Student Data")
+        print("🚪10. Logout")
 
         choice = input("Choose: ").strip()
 
@@ -209,12 +211,14 @@ def admin_menu():
         elif choice == "4":
             admin_delete_student()
         elif choice == "5":
-            admin_elevate_user()
+            admin_delete_user()
         elif choice == "6":
-            admin_input_grades()
+            admin_manage_user_role()
         elif choice == "7":
-            display_grade_graphs()
+            admin_input_grades()
         elif choice == "8":
+            display_grade_graphs()
+        elif choice == "9":
             print("1. Export Student Report Cards")
             print("2. Export Student Roster")
 
@@ -227,7 +231,7 @@ def admin_menu():
                 export_report_cards()
 
 
-        elif choice == "9":
+        elif choice == "10":
             logout_session()
             print("🚪Logged out.🚪")
             break
@@ -349,8 +353,40 @@ def admin_input_grades():
         print("❌Failed to save grades.❌")
 
 
-def admin_elevate_user():
-    print("\n--- Elevate User To Admin ---")
+def admin_delete_user():
+    print("\n--- Delete User ---")
+
+    email = prompt_valid_input("Enter user email to delete: ", valid_email, "Invalid email format.")
+    user = find_user_by("email", email)
+
+    if not user:
+        print("❌User not found.❌")
+        return
+
+    current_user = get_current_user()
+    if current_user and current_user.get("email") == email:
+        print("You cannot delete the account you are currently logged in with.")
+        return
+
+    print("\nUser found:")
+    print(f"Email: {user['email']}")
+    print(f"Role: {user.get('role', 'user')}")
+    if user.get("student_id"):
+        print(f"Linked student ID: {user['student_id']}")
+
+    confirm = input("Are you sure you want to delete this user? (y/n): ").strip().lower()
+    if confirm != "y":
+        print("Deletion cancelled.")
+        return
+
+    if delete_user(email):
+        print("User deleted successfully.")
+    else:
+        print("❌Error deleting user.❌")
+
+
+def admin_manage_user_role():
+    print("\n--- Manage User Admin Role ---")
 
     email = prompt_valid_input("Enter existing user email: ", valid_email, "Invalid email format.")
     user = find_user_by("email", email)
@@ -360,7 +396,20 @@ def admin_elevate_user():
         return
 
     if user.get("role") == "admin":
-        print("❌That user is already an admin.❌")
+        current_user = get_current_user()
+        if current_user and current_user.get("email") == email:
+            print("You cannot revoke admin privileges from the account you are currently logged in with.")
+            return
+
+        confirm = input(f"Revoke admin privileges from {email}? (y/n): ").strip().lower()
+        if confirm != "y":
+            print("Cancelled.")
+            return
+
+        if update_user(email, {"role": "user"}):
+            print("Admin privileges revoked successfully.")
+        else:
+            print("❌Failed to update user role.❌")
         return
 
     confirm = input(f"Make {email} admin? (y/n): ").strip().lower()

@@ -119,6 +119,11 @@ def update_user(email, updated_data):
     return status == 200
 
 
+def delete_user(email):
+    status, data = request_json("DELETE", f"/data/users/{quote(email, safe='')}")
+    return status == 200
+
+
 def find_student_by(field, value):
     query = urlencode({"field": field, "value": value})
     status, data = request_json("GET", f"/data/students/find?{query}")

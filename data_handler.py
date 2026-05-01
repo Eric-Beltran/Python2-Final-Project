@@ -128,6 +128,25 @@ def update_user(email, updated_data):
 
 # ── Students ─────────────────────────────────────────────────────────────────
 
+def delete_user(email):
+    if using_remote_api():
+        import api_client
+        return api_client.delete_user(email)
+
+    if not find_user_by("email", email):
+        return False
+
+    clear_last_error()
+    try:
+        users_table.delete_item(Key={"email": email})
+        return True
+    except Exception as e:
+        message = error_message(e)
+        set_last_error(message)
+        print(f"Error deleting user: {message}")
+        return False
+
+
 def find_student_by(field, value):
     if using_remote_api():
         import api_client

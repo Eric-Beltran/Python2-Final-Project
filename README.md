@@ -12,6 +12,7 @@ Current Features:
  - Read items from database
  - Register users as standard or admin.
  - Admins can create, edit, and delete student profiles.
+ - Admins can delete users and grant or revoke admin privileges.
  - Users can view their own student profiles.
  - Users are automatically linked to their personal student profile by matching emails.
 
