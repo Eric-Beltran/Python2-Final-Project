@@ -1,3 +1,11 @@
+"""
+Utilities for working with student grades.
+
+Grades are stored as a two-dimensional list so multiple rows of grades can be
+kept for a student. GradeManager contains small helper methods for calculating
+averages and appending grades.
+"""
+
 class GradeManager:
     """
     This class handles student grades.

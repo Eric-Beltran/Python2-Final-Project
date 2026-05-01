@@ -1,5 +1,8 @@
 """
-Tracks the currently logged-in user for the session.
+In-memory session tracking for the CLI.
+
+The menu layer uses this module to remember which user is currently logged in
+and to clear that state when the user logs out.
 """
 
 current_user = None

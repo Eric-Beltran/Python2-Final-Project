@@ -1,5 +1,9 @@
 """
-Menu flow for the Secure Student Management System.
+Menu for the Secure Student Management System.
+
+This module contains the command-line interface for registration, login, user
+actions, and admin actions. It coordinates validation, session state, student
+record management, grade entry, reports, and analytics.
 """
 
 from analytics import display_grade_graphs
@@ -122,20 +126,12 @@ def register():
     print("3. Password is between 6 and 12 letters long.")
     password = prompt_valid_input("Enter password: ", valid_password, "Invalid password format.")
 
-    print("\n🔒--- Student Information ---🔒")
-    first, last, age, gender, phone, major = prompt_student_information()
-    student = create_student_record(first, last, age, gender, phone, major)
-
-    user = register_user(email=email, password=password, role="user", student_id=student["id"])
+    user = register_user(email=email, password=password, role="user")
     if not user:
         print("❌Registration failed.❌")
         return
 
-    if add_student(student):
-        print("✅Registration successful as user.✅")
-        print(f"✅Generated student ID: {student['id']}✅")
-    else:
-        print("❌User was created, but the student record could not be saved.❌")
+    print("✅Registration successful as user.✅")
 
 
 def login():

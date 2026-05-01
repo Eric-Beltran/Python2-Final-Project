@@ -1,3 +1,11 @@
+"""
+Client helper functions for talking to the remote project API.
+
+The command-line application uses this module when USE_REMOTE_API is enabled.
+It handles JSON requests, stores the current login token, and converts API
+responses into simple return values for data_handler and the menu layer.
+"""
+
 import json
 import os
 from urllib.error import HTTPError, URLError

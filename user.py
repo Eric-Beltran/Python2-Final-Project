@@ -1,6 +1,9 @@
 """
-User classes and login/register logic.
-Only minimal change made: register_user now supports student_id linking.
+User models and authentication helpers.
+
+This module defines regular and admin users, creates user dictionaries for
+storage, registers new accounts, and verifies login attempts with salted
+password hashes.
 """
 
 from data_handler import add_user, find_user_by

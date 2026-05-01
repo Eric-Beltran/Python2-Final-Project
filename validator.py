@@ -1,9 +1,8 @@
 """
-Runs only when registering a User
-Contains Regex functions for names (capitalized, no digits),
-phones (xxx-xxx-xxxx)
-specific email extensions (yahoo, gmail, ucmo).
-And password format
+Input validation helpers for the CLI.
+
+These functions validate names, email addresses, phone numbers, and passwords
+before registration or student-record updates are allowed to continue.
 """
 import re
 
@@ -26,7 +25,7 @@ def valid_phone(phone):
     return False
 
 def valid_password(password):
-    pass_regex = r"^[!@#$%^&*].*(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,11}$"
+    pass_regex = r"^(?=.{6,12}$)(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[!@#$%^&*].*$"
     if re.match(pass_regex, password):
         return True
     return False

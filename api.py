@@ -1,3 +1,11 @@
+"""
+HTTP API server for the Secure Student Management System.
+
+This module exposes login, user, and student endpoints for the command-line
+client. It signs short-lived login tokens, checks admin permissions for
+protected routes, and delegates database work to data_handler.
+"""
+
 import base64
 import datetime
 import hashlib

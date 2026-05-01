@@ -1,10 +1,8 @@
 """
 Command-line entry point for the Secure Student Management System.
 
-Can currently:
- - Register a new account
- - Log in with a stored account
- - Displays a dashboard for the active session. Currently empty.
+This file configures the CLI to use the remote API by default, checks whether
+the API and database are reachable, and then starts the main menu.
 
 Test logins:
  - Admin Email: admin@gmail.com, Admin Password: !1Password

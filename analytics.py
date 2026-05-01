@@ -1,8 +1,10 @@
-'''
-Using matplotlib to create data visualization graphics specifically for
-student grades.
+"""
+Grade visualization tools for the admin dashboard.
 
-'''
+This module loads student records, calculates each student's average, prints
+the averages, and displays Matplotlib charts for averages and letter-grade
+distribution.
+"""
 
 from data_handler import get_all_students
 from grade_manager import GradeManager

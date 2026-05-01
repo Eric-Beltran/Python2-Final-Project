@@ -1,5 +1,9 @@
-#reports.py
-#This file creates CSV reports from the DynamoDB student table
+"""
+CSV export functions for student data.
+
+The admin menu calls this module to create roster and report-card files from
+the same student records used by the rest of the application.
+"""
 
 import csv
 from data_handler import get_all_students

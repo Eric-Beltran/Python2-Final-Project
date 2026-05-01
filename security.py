@@ -1,6 +1,8 @@
 """
-When making a user will salt and hash the created password for storage.
-When logging in takes the input password and compares to hashed password.
+Password hashing helpers.
+
+The user module calls hash_password when creating accounts and checking login
+attempts. Passwords are stored as SHA-256 hashes with a random salt.
 """
 
 import hashlib

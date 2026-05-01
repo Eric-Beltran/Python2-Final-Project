@@ -1,3 +1,12 @@
+"""
+Data access layer for users and student records.
+
+When the CLI is running normally, this module forwards operations to the
+remote API. When the API server is running, it talks directly to DynamoDB.
+The rest of the project calls these functions instead of touching either
+storage option directly.
+"""
+
 import random
 import os
 from student import StudentRecord

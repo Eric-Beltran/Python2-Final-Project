@@ -1,3 +1,10 @@
+"""
+Student record model.
+
+StudentRecord stores the fields used by the database and menus, then converts
+between object form and dictionary form for persistence and display.
+"""
+
 class StudentRecord:
     """
     This class stores the information for one student.
