@@ -10,6 +10,10 @@ Test logins:
  - Admin Email: admin@gmail.com, Admin Password: !1Password
 """
 
+import os
+
+os.environ.setdefault("USE_REMOTE_API", "1")
+
 from menu import main_menu
 
 if __name__ == "__main__":

@@ -4,12 +4,17 @@ student grades.
 
 '''
 
-import matplotlib.pyplot as plt
 from data_handler import get_all_students
 from grade_manager import GradeManager
 
 
 def display_grade_graphs():
+    try:
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print("Matplotlib is not installed, so grade graphs cannot be displayed.")
+        return
+
     students = get_all_students()
 
     if not students:

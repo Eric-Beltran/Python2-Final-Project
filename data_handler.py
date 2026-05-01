@@ -1,13 +1,6 @@
 import random
 import os
-import boto3
-from boto3.dynamodb.conditions import Attr
-from botocore.exceptions import ClientError
 from student import StudentRecord
-
-dynamodb = boto3.resource("dynamodb", region_name=os.environ.get("AWS_REGION", "us-east-2"))
-users_table = dynamodb.Table("Users")
-students_table = dynamodb.Table("Students")
 
 
 def using_remote_api():
@@ -15,6 +8,16 @@ def using_remote_api():
         os.environ.get("RUNNING_API_SERVER") != "1"
         and os.environ.get("USE_REMOTE_API", "1") == "1"
     )
+
+
+if not using_remote_api():
+    import boto3
+    from boto3.dynamodb.conditions import Attr
+    from botocore.exceptions import ClientError
+
+    dynamodb = boto3.resource("dynamodb", region_name=os.environ.get("AWS_REGION", "us-east-2"))
+    users_table = dynamodb.Table("Users")
+    students_table = dynamodb.Table("Students")
 
 
 def scan_all(table, **kwargs):
